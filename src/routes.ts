@@ -1,9 +1,14 @@
 import { Express, Request, Response } from "express";
 import validate from "./middlewares/validateResource";
 import { createUserHandler } from "./controllers/user.controller";
-import { createUserSessionHandler } from "./controllers/session.controller";
+import {
+  createUserSessionHandler,
+  deleteSessionHandler,
+  getUserSessionsHandler,
+} from "./controllers/session.controller";
 import { createUserSchema } from "./schemas/user.schema";
 import { createSessionSchema } from "./schemas/session.schema";
+import requireUser from "./middlewares/requireUser";
 
 const routes = (app: Express) => {
   app.get("/healthcheck", (req: Request, res: Response) => res.sendStatus(200));
@@ -15,6 +20,9 @@ const routes = (app: Express) => {
     validate(createSessionSchema),
     createUserSessionHandler
   );
+
+  app.get("/api/sessions", requireUser, getUserSessionsHandler);
+  app.delete("/api/sessions", requireUser, deleteSessionHandler);
 };
 
 export default routes;
