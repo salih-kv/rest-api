@@ -1,20 +1,30 @@
 import jwt from "jsonwebtoken";
 import config from "config";
 
-const privateKey = config.get<string>("accessTokenPublicKey");
-const publicKey = config.get<string>("accessTokenPrivateKey");
-
 export const signJwt = (
   object: Object,
+  keyName: "accessTokenPrivateKey" | "refreshTokenPrivateKey",
   options?: jwt.SignOptions | undefined
 ) => {
-  return jwt.sign(object, privateKey, {
+  const signingKey = Buffer.from(
+    config.get<string>(keyName),
+    "base64"
+  ).toString("ascii");
+
+  return jwt.sign(object, signingKey, {
     ...(options && options), // check is defined
     // algorithm: "RS256",
   });
 };
 
-export const verifyJwt = (token: string) => {
+export const verifyJwt = (
+  token: string,
+  keyName: "accessTokenPublicKey" | "refreshTokenPublicKey"
+) => {
+  const publicKey = Buffer.from(config.get<string>(keyName), "base64").toString(
+    "ascii"
+  );
+
   try {
     const decoded = jwt.verify(token, publicKey);
     return {

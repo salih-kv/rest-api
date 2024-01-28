@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { createUser } from "../services/user.service";
-import logger from "../utils/logger";
 import { createUserInput } from "../schemas/user.schema";
+import logger from "../utils/logger";
 
 export const createUserHandler = async (
   req: Request<{}, {}, createUserInput["body"]>,
